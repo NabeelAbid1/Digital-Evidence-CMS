@@ -26,6 +26,8 @@ public:
 
     ~Case() {}
 
+    friend class Logger;
+
     bool addEvidence(Evidence* e) {
         if (isLocked) {
             cout << "[ERROR] Case #" << cId << " is SUBMITTED. Evidence cannot be added.\n";

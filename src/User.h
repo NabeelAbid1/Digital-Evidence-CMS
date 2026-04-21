@@ -17,6 +17,8 @@ class User{
             number++;
             userCode = userRole.substr(0,1) + to_string(number);
         }
+
+        friend class Logger;
         //virtual void displayDetails() = 0; 
         void setValues(string name, string userId, string userCode, string userRole, int caseVer){
             this->name =name;

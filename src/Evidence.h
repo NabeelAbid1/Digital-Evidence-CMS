@@ -34,6 +34,8 @@ public:
         evidenceCount++;
     }
 
+    friend class Logger;
+
     //Getters
     string getId()          const { return eId; }
     string getHash()        const { return hash; }
