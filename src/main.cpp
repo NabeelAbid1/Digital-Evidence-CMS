@@ -11,6 +11,8 @@
 
 //classes headers
 #include "User.h"
+#include "Case.h"
+#include "Evidence.h"
 
 using namespace std;
 
