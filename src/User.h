@@ -1,44 +1,40 @@
+#pragma once
 #include <iostream>
 #include <string>
+#include "Logger.h"
 
 
 using namespace std;
 
 class User{
-    private:
-        string name;
-        string userID;
-        string userPass;
-        string userCode;
-        string userRole;
-        static int number;
-    public:
-        User(string name, string userId, string userRole): name(name), userID(userId), userCode(userCode), userRole(userRole){
-            number++;
-            userCode = userRole.substr(0,1) + to_string(number);
-        }
-
-        friend class Logger;
-        //virtual void displayDetails() = 0; 
-        void setValues(string name, string userId, string userCode, string userRole, int caseVer){
-            this->name =name;
-            this->userID =userId;
-            this->userCode =userCode;
-            this->userRole =userRole;
-        }
-        void saveLoggs();                     //Loggs function should be made
-        void saveInforToFile();               //Saves info 
-        void displayInfo();
+protected:
+    string name;
+    string userID;
+    string userPass;
+    string userCode;
+    string userRole;
+    static int number;
+public:
+    User(string name, string userId, string userCode, string userRole): name(name), userID(userId), userCode(userCode), userRole(userRole){
+        //userCode = userRole.substr(0,1) + to_string(number);
+    }
+    friend class Logger;
+    static void userCountIncreament(){ number++; } 
+    virtual void displayDetails() { //Can be abstract class but in functon parameter it gives error 
+        cout << "ID: " << userID << endl;
+        cout << "Name: " << name << endl;
+        cout << "Code: " << userCode << endl;
+        cout << "Role: " << userRole << endl;
+    }
+    void setValues(string name, string userId, string userCode, string userRole, int caseVer){
+        this->name =name;
+        this->userID =userId;
+        this->userCode =userCode;
+        this->userRole =userRole;
+    }
+    void saveLoggs();                     //Loggs function should be made               //Saves info 
 };
 
-
-void User::saveInforToFile() {
-
-};
-
-void User::displayInfo() {
-    
-};
 int User::number = 0;
 
 

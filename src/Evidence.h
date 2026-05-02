@@ -1,5 +1,6 @@
 #ifndef EVIDENCE_H
 #define EVIDENCE_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -10,37 +11,40 @@ using namespace std;
 //srand((unsigned)time(nullptr)); <---put this in int main()
 
 class Evidence {
-private:
+protected:
     string eId;
     const string hash; //unique identifier for the evidence, const so it can't be tampered with
+    string fileName;
     double sizeMB;
-    string discription;
     static int evidenceCount;
-
+    
     static string generateHash(int cId) {
     return "SHA-" + to_string(rand() % 9000 + 1000)+ to_string(cId)+ to_string(evidenceCount)+ to_string(rand() % 9000 + 1000);
 }
 
 public:
     Evidence()
-        : eId(" "), hash(" "), sizeMB(0), discription(" ") {
+        : eId(" "), hash(" "), sizeMB(0){
         evidenceCount++;
     }
 
-    Evidence(double s, int cId, string d)
-        : sizeMB(s), discription(d),
+    Evidence(double s, int cId, string fileName)
+        : sizeMB(s),
           eId(to_string(cId) + "-E" + to_string(evidenceCount)),
-          hash(generateHash(cId)) {
+          hash(generateHash(cId)), fileName(fileName) {
         evidenceCount++;
     }
 
+    //For getting existing data use by drived class
+    Evidence(string id, string fileName, double fileSize, string hash): eId(id), fileName(fileName), sizeMB(fileSize), hash(hash) {}
+
+    virtual string serializeToString() const = 0;   
     friend class Logger;
 
     //Getters
     string getId()          const { return eId; }
     string getHash()        const { return hash; }
     double getSize()        const { return sizeMB; }
-    string getDiscription() const { return discription; }
     static int getCount()         { return evidenceCount; }
 
     virtual void display() const = 0; //virtual makes it late binding, calls the correct derived display()
@@ -50,13 +54,11 @@ public:
 public:
     //called inside derived display() to print shared fields
     void displayBase() const {
-        cout << "\n  Evidence ID: " << eId        << "  Hash: " << hash        << "\n  Size: " << sizeMB << " MB"<< "\n  Description: " << discription << "\n";
+        cout << "\n  Evidence ID: " << eId        << "  Hash: " << hash        << "\n  Size: " << sizeMB << " MB"<< endl;
     }
 };
 
 int Evidence::evidenceCount = 0; //static initializer
-
-
 class VideoEvidence : public Evidence {
 private:
     string duration;
@@ -64,11 +66,18 @@ private:
     string format;
 
 public:
-    VideoEvidence(double s, int cId, string d,
+    VideoEvidence(double s, int cId, string fileName,
                   string dur, string res, string fmt = "MP4")
-        : Evidence(s, cId, d),duration(dur),resolution(res),format(fmt) {}
+        : Evidence(s, cId, fileName),duration(dur),resolution(res),format(fmt) {}
 
-    void display() const override { //overide streghtens the integrity of structure
+    VideoEvidence(string eid, string fileName, double fileSize, string hash, string format, string resolution, string duration): Evidence(eid, fileName, fileSize, hash), format(format), resolution(resolution), duration(duration) {}
+    
+    //Use for writing in file with Case 
+    string serializeToString() const override {
+        return "VIDEO|" + eId + "|" + fileName + "|" + to_string(sizeMB) 
+               + "|" + format + "|" + resolution + "|" + duration + "|" + hash;
+    }
+    void display() const override { 
         cout << "\n  [VIDEO EVIDENCE]\n";
         displayBase();
         cout << "\n  Duration: " << duration<< "\n  Resolution: " << resolution<< "\n  Format: " << format     << "\n";
@@ -81,30 +90,6 @@ public:
 };
 
 
-class DiskImage : public Evidence { //I made it but dont understand this? is this necesarry?
-private:
-    string driveSerial;
-    string fileSystem;
-    string mountPoint;
-
-public:
-    DiskImage(double s, int cId, string d,
-              string serial, string fs, string mount)
-        : Evidence(s, cId, d),driveSerial(serial),fileSystem(fs),mountPoint(mount) {}
-
-    void display() const override {
-        cout << "\n  [DISK IMAGE]\n";
-        displayBase();
-        cout << "\n  Drive Serial  : " << driveSerial << "  File System   : " << fileSystem  << "\n  Mount Point   : " << mountPoint  << "\n";
-    }
-
-    //getters
-    string getDriveSerial() const { return driveSerial; }
-    string getFileSystem()  const { return fileSystem; }
-    string getMountPoint()  const { return mountPoint; }
-};
-
-
 class AudioEvidence : public Evidence {
 private:
     string duration;
@@ -112,17 +97,25 @@ private:
     string format;
 
 public:
-    AudioEvidence(double s, int cId, string d,
+    AudioEvidence(double s, int cId,  string fileName,
                   string dur, int sampleRate, string fmt = "WAV")
-        : Evidence(s, cId, d),
+        : Evidence(cId, s, fileName),
           duration(dur),
           sampleRateHz(sampleRate),
           format(fmt) {}
 
+    AudioEvidence(string eid, string fileName, double fileSize,string hash, string duration, int sampleRateHz, string format): Evidence(eid, fileName, fileSize, hash), duration(duration), sampleRateHz(sampleRateHz), format(format) {}
+
+    //Use for writing in file with Case 
+    string serializeToString() const override {
+        return "AUDIO|" + eId + "|" + fileName + "|" + to_string(sizeMB)
+               + "|" + duration + "|" + to_string(sampleRateHz) + "|" + format + "|" + hash;
+    }
+
     void display() const override {
         cout << "\n  [AUDIO EVIDENCE]\n";
         displayBase();
-        cout << "\n  Duration      : " << duration     << "\n  Sample Rate: " << sampleRateHz << "\n Hz\n"<< "  Format: " << format<< "\n";
+        cout << "\n  Duration : " << duration     << "\n  Sample Rate: " << sampleRateHz << "\n Hz\n"<< "  Format: " << format<< "\n";
     }
 
         //getters
@@ -139,9 +132,19 @@ private:
     string captureDevice;
 
 public:
-    ImageEvidence(double s, int cId, string d,
-                  string res, string fmt, string device = "Unknown")
-        : Evidence(s, cId, d),resolution(res),format(fmt),captureDevice(device) {}
+    ImageEvidence(double s, int cId, string fileName,
+                  string resolution, string format, string captureDevice)
+        : Evidence(cId, s, fileName),
+          resolution(resolution),
+          format(format),
+          captureDevice(captureDevice) {}
+
+    ImageEvidence(string eid, string fileName, double fileSize,  string hash, string resolution, string format, string captureDevice): Evidence(eid, fileName, fileSize, hash), resolution(resolution), format(format), captureDevice(captureDevice) {}
+
+    string serializeToString() const override {
+        return "IMAGE|" + eId + "|" + fileName + "|" + to_string(sizeMB)
+               + "|" + resolution + "|" + format + "|" + captureDevice + "|" + hash;
+    }
 
     void display() const override {
         cout << "\n  [IMAGE EVIDENCE]\n";
@@ -155,4 +158,4 @@ public:
     string getCaptureDevice() const { return captureDevice; }
 };
 
-#endif // EVIDENCE_H
+#endif 

@@ -13,7 +13,7 @@
 //classes headers
 #include "User.h"
 #include "Case.h"
-#include "Evidence.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -62,6 +62,11 @@ int main(){
                 this_thread::sleep_for(chrono::microseconds(2000));  //sleep(2000)
                 continue; //skip this iteration (go to start)
             }
+            if(result == 10) {
+                cout << "Logot successfully\n";
+                this_thread::sleep_for(chrono::microseconds(2000));  //sleep(2000)
+                continue;
+            }
         } else {
             cout <<"Choice must be from 1-3\n";
         }
@@ -84,7 +89,7 @@ int AdminRoles(){
     cin >> choice;
 
     if(choice == 99) return choice;
-    if(choice != 99 && choice != 1) {
+    if(choice != 1) {
         cout << "Invalid Choice\n";
         return 99;
     }
@@ -100,7 +105,7 @@ int AdminRoles(){
 
         this_thread::sleep_for(chrono::seconds(2));
 
-        string adminfile = "E:\Projects\Digital Evidence and Case Management System Sem02 (OOP)\Digital-Evidence-CMS\data\admin.txt";
+        string adminfile = "data/admin.txt";
             
         //call login function
         CurrentLoggedAdmin = loginUser(loginUserInput, loginUserPass, adminfile);
@@ -117,9 +122,78 @@ int AdminRoles(){
             cout <<"Login limit exceeds\n";
             system("cls");
             return 99;
-        }     
+        }  
     }
+    while(true){
+        int CaseId;
 
+        cout <<"Enter Case ID\n";
+        cin >> CaseId;
+        cout <<"Creating case\n..";
+
+        string filename = "data/cases/CASE_" + to_string(CaseId) + ".txt";
+
+        Case* loadedCase = nullptr;
+        loadedCase = Case::loadCase(filename); 
+
+        if(loadedCase == nullptr){
+            cout << "Error! No case found\n";
+            continue;
+        }
+
+        Sleep(2000);
+        cout <<"Case is opened\n";
+        //log
+
+        //Admin Jobs
+        while(true){
+
+            int choice;
+            //create logg at every choice (do as you prefer)
+            cout << "0. Display Case\n";
+            cout<<"1. Check Evidences\n"; 
+            cout<<"2. Close Case\n";
+            cout<<"3. Lock Case\n";
+            cout<<"4. Unlock Case\n";
+            cout<<"5. Save Case\n";
+            cin >> choice;
+
+            if(choice == 3){
+                loadedCase->lockCase();
+            }
+            else if(choice == 4){
+                loadedCase->unLockCase();
+            }
+            else if (choice == 2){
+                if(loadedCase->getStatus()==3){
+                    cout <<"Error! Case is already closed";
+                    continue;
+                }
+                if(loadedCase->getStatus()==2){
+                    loadedCase->advanceStatus();
+                }
+
+            }else if (choice == 1){
+                loadedCase->displayEvidence();
+                int opt;
+                cout << "Do you want to verify evidences?(1/0)";
+                cin >> opt;
+                //opt==1? loadedCase->verifyEvidenceIntegrity(): continue;
+                if(opt==1){ continue;    }
+                loadedCase->verifyEvidenceIntegrity();
+            }
+            else if(choice ==0){
+                loadedCase->displayCase();
+            }
+            else if (choice == 5) {
+                loadedCase->saveCase();
+                delete loadedCase;
+                cout <<"Case is saved\n";
+                break;
+            }
+        }
+    
+    }
     //Design the Main admin menu where list all the functions of admin
 
     
@@ -156,14 +230,18 @@ int AnalystRoles(){
 
         this_thread::sleep_for(chrono::seconds(2));
 
-        string analystfile = "E:\Projects\Digital Evidence and Case Management System Sem02 (OOP)\Digital-Evidence-CMS\data\analyst.txt";
+        string analystfile = "data/analyst.txt";
             
         //call login function
         CurrentLoggedAnalyst = loginUser(loginUserInput, loginUserPass, analystfile);
         
         //if Not verified 
             //User can enter credentials three 3 only for preventing brute force attack then send back to login page
-        if(CurrentLoggedAnalyst!=nullptr) break;
+        if(CurrentLoggedAnalyst!=nullptr)  {
+            cout <<"Login Successfully\n";
+            //Logg
+            break;
+        }
         if(num <=3){
             cout << "Try again\n";
             num++;
@@ -173,10 +251,210 @@ int AnalystRoles(){
             cout <<"Login limit exceeds\n";
             system("cls");
             return 99;
-        }     
+        }   
+    }  
+    //Design the Main admin menu where list all the functions of admin
+    while(true){
+        system("cls");
+        int choice;
+        cout << "**Intake Officer**"<<endl;                 
+        cout << "\t1. Open Case from file" << endl;          
+        cout << "\t10. Logout" << endl;       
+       
+        cout << "Enter choice... : "; 
+        cin >> choice;
+
+        if(choice == 10){
+            return choice;
+        }
+        if(choice!=1){
+            cout <<"Invaild input\n";
+            continue;
+        }
+        
+
+        int CaseId;
+
+        cout <<"Enter Case ID\n";
+        cin >> CaseId;
+        cout <<"Creating case\n..";
+
+        string filename = "data/cases/CASE_" + to_string(CaseId) + ".txt";
+
+        Case* loadedCase = nullptr;
+        loadedCase = Case::loadCase(filename); 
+
+        if(loadedCase == nullptr){
+            cout << "Error! No case found\n";
+            continue;
+        }
+
+        
+        Sleep(2000);
+        cout <<"Case is opened\n";
+        //log
+
+        //Analyst Jobs
+        while(true){
+            int choice;
+            //create logg at every choice (do as you prefer)
+            cout<<"1. Add Evidences\n"; 
+            cout<<"2. Submitted Case\n";
+            cout<<"3. Save Case\n";
+            cin >> choice;
+            if(choice==2){
+                if(loadedCase->getStatus()==2){
+                    cout <<"Case is already submitted\n";
+                    break;
+                }
+                loadedCase->advanceStatus();
+
+            }
+            else if(choice == 3){
+                loadedCase->saveCase();
+                delete loadedCase;
+                cout<<"Cases is saved\n";
+                break;
+            }
+            else if(choice == 1){
+                //Adding Evidences 
+                //log
+                
+                while(true){
+                    if(loadedCase->getIsLocked()){
+                        cout <<"Error! Case is locked\nCannot add evidences";
+                        break;
+                    }
+                    system("cls");
+                    cout << "Enter evidences\n";
+
+                    int opt;
+                    cout <<"1. Video\n";
+                    cout <<"2. Audio\n";
+                    cout <<"3. Image\n";
+                    cout <<"4. Nothing\n";
+                    //cout <<"5. Nothing\n";
+
+                    if(opt == 1 ){
+                        cout << "Video Evidence\n...";
+
+                        string duration, resolution, filename;
+                        int id;
+                        double fileSize;
+
+                        cout <<"Enter id";
+                        cin >> id;
+                        cin.ignore();
+
+                        cout <<"Enter filename";
+                        getline(cin, filename);
+
+                        cout <<"Enter size";
+                        cin>>fileSize;
+                        cin.ignore();
+
+                        cout <<"Enter duration";
+                        cin>> duration;
+                        cin.ignore();
+
+                        cout <<"Enter resolution";
+                        getline(cin, resolution);
+
+                        VideoEvidence vidEv(fileSize, id, filename, duration, resolution);
+                        loadedCase->addEvidence(&vidEv);
+
+                        cout <<"Video evidence added successfully\n";
+                        Sleep(2000);
+                        
+                    }
+                    else if(opt == 2 ){
+                        string duration,  filename;
+                        int id,sampleRateHz;
+                        double fileSize;
+
+                        cout <<"Enter id";
+                        cin >> id;
+                        cin.ignore();
+
+                        cout <<"Enter filename";
+                        getline(cin, filename);
+
+                        cout <<"Enter size";
+                        cin>>fileSize;
+                        cin.ignore();
+
+                        cout <<"Enter duration";
+                        cin>> duration;
+                        cin.ignore();
+
+                        cout <<"Enter sampleRateHz";
+                        cin >> sampleRateHz;
+
+                        AudioEvidence audEv(fileSize, id, filename, duration, sampleRateHz);
+                        loadedCase->addEvidence(&audEv);
+
+                        cout <<"Audio evidence added successfully\n";
+                        Sleep(2000);
+
+                    }
+                    else if(opt == 3 ){
+                        cout << "Image Evidence\n...";
+
+                        string captureDevice, resolution, filename, format;
+                        int id;
+                        double fileSize;
+
+                        cout <<"Enter id";
+                        cin >> id;
+                        cin.ignore();
+
+                        cout <<"Enter filename";
+                        getline(cin, filename);
+
+                        cout <<"Enter size";
+                        cin>>fileSize;
+                        cin.ignore();
+
+                        cout <<"Enter captureDevice";
+                        cin>> captureDevice;
+                        cin.ignore();
+
+                        cout <<"Enter resolution";
+                        getline(cin, resolution);
+
+                        cout <<"Enter format";
+                        getline(cin, format);
+
+                        ImageEvidence imgEv(fileSize, id, filename, resolution, format, captureDevice);
+                        loadedCase->addEvidence(&imgEv);
+
+                        cout <<"Image evidence added successfully\n";
+                        Sleep(2000);
+                        
+                    }
+                    
+                    else if (opt == 4){
+                        cout << "List of Evidences that are added\n";
+                        loadedCase->displayEvidence();
+                        cout <<"Case is submitted\n";
+                        
+                        break;
+                    }
+                }
+        
+    
+                
+
+            }
+
+        
+
+        
+    
+        
+        }
     }
 
-    //Design the Main admin menu where list all the functions of admin
 
 }
 
@@ -207,14 +485,18 @@ int IntakeOfficerRoles(){
 
         this_thread::sleep_for(chrono::seconds(2));
 
-        string IntakeOfficerfile = "E:\Projects\Digital Evidence and Case Management System Sem02 (OOP)\Digital-Evidence-CMS\data\IntakeOfficer.txt";
+        string IntakeOfficerfile = "data/IntakeOfficer.txt";
             
         //call login function
         CurrentLoggedIntakeOfficer = loginUser(loginUserInput, loginUserPass, IntakeOfficerfile);
         
         //if Not verified 
             //User can enter credentials three 3 only for preventing brute force attack then send back to login page
-        if(CurrentLoggedIntakeOfficer!=nullptr) break;
+        if(CurrentLoggedIntakeOfficer!=nullptr) {
+            cout <<"Login Successfully\n";
+            //Logg
+            break;
+        }
         if(num <=3){
             cout << "Try again\n";
             num++;
@@ -228,6 +510,173 @@ int IntakeOfficerRoles(){
     }
 
     //Design the Main admin menu where list all the functions of admin
+    while(true){
+        system("cls");
+        int choice;
+        cout << "**Intake Officer**"<<endl;                 
+        cout << "\t1. Register Case" << endl;          
+        cout << "\t10. Logout" << endl;       
+       
+        cout << "Enter choice... : "; 
+        cin >> choice;
+
+        if(choice == 10){
+            return choice;
+        }
+        if(choice!=1){
+            cout <<"Invaild input\n";
+            continue;
+        }
+        string vicName, discription, registName, crimeType;
+        int threatLevel;
+
+        cout <<"Enter Victim name\n";
+        getline(cin, vicName);
+
+        cout <<"Enter discription\n";
+        getline(cin, discription);
+
+        cout <<"Enter crime type\n";
+        getline(cin, crimeType);
+
+        cout <<"Enter threat level (1-5)\n";
+        cin >> threatLevel;
+        cin.ignore();
+
+        cout <<"Entr register by name\n";
+        getline(cin, registName);
+
+        Case c1(vicName, discription, crimeType, threatLevel, registName);
+
+        cout <<"Creating case\n..";
+        Sleep(3000);
+        cout <<"Case is created\n";
+        //log
+
+        //Adding Evidences
+        //log
+        while(true){
+            system("cls");
+            cout << "Enter evidences\n";
+
+            int opt;
+            cout <<"1. Video\n";
+            cout <<"2. Audio\n";
+            cout <<"3. Image\n";
+            cout <<"4. Nothing\n";
+            //cout <<"5. Nothing\n";
+
+            if(opt == 1 ){
+                cout << "Video Evidence\n...";
+
+                string duration, resolution, filename;
+                int id;
+                double fileSize;
+
+                cout <<"Enter id";
+                cin >> id;
+                cin.ignore();
+
+                cout <<"Enter filename";
+                getline(cin, filename);
+
+                cout <<"Enter size";
+                cin>>fileSize;
+                cin.ignore();
+
+                cout <<"Enter duration";
+                cin>> duration;
+                cin.ignore();
+
+                cout <<"Enter resolution";
+                getline(cin, resolution);
+
+                VideoEvidence vidEv(fileSize, id, filename, duration, resolution);
+                c1.addEvidence(&vidEv);
+
+                cout <<"Video evidence added successfully\n";
+                Sleep(2000);
+                
+            }
+            else if(opt == 2 ){
+                string duration,  filename;
+                int id,sampleRateHz;
+                double fileSize;
+
+                cout <<"Enter id";
+                cin >> id;
+                cin.ignore();
+
+                cout <<"Enter filename";
+                getline(cin, filename);
+
+                cout <<"Enter size";
+                cin>>fileSize;
+                cin.ignore();
+
+                cout <<"Enter duration";
+                cin>> duration;
+                cin.ignore();
+
+                cout <<"Enter sampleRateHz";
+                cin >> sampleRateHz;
+
+                AudioEvidence audEv(fileSize, id, filename, duration, sampleRateHz);
+                c1.addEvidence(&audEv);
+
+                cout <<"Audio evidence added successfully\n";
+                Sleep(2000);
+
+            }
+            else if(opt == 3 ){
+                cout << "Image Evidence\n...";
+
+                string captureDevice, resolution, filename, format;
+                int id; 
+                double size;
+
+                cout <<"Enter id";
+                cin >> id;
+                cin.ignore();
+
+                cout <<"Enter filename";
+                getline(cin, filename);
+
+                cout <<"Enter size";
+                cin>>size;
+                cin.ignore();
+
+                cout <<"Enter captureDevice";
+                cin>> captureDevice;
+                cin.ignore();
+
+                cout <<"Enter resolution";
+                getline(cin, resolution);
+
+                cout <<"Enter format";
+                getline(cin, format);
+
+                ImageEvidence imgEv(size, id, filename, resolution, format, captureDevice);
+                c1.addEvidence(&imgEv);
+
+                cout <<"Image evidence added successfully\n";
+                Sleep(2000);
+                
+            }
+            
+            else if (opt == 4){
+                cout << "List of Evidences that are added\n";
+                c1.displayEvidence();
+                cout <<"Case is submitted\n";
+                c1.saveCase();//when nothing to add just close and save the case
+                break;
+            }
+        }
+        
+        
+
+    }
+    
 
 }
 

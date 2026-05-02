@@ -14,6 +14,7 @@ private:
     ofstream logFile;
     static Logger* instance;
 
+    friend class User;
     Logger() {
         logFile.open("data/system_log.txt", ios::app); // append to not overwrite on existing logs
     }
