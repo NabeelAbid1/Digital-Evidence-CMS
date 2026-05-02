@@ -1,5 +1,7 @@
+#pragma once
 #include <iostream>
 #include <string>
+#include "Logger.h"
 
 
 using namespace std;
@@ -30,19 +32,9 @@ public:
         this->userCode =userCode;
         this->userRole =userRole;
     }
-    void saveLoggs();                     //Loggs function should be made
-    void saveInforToFile();               //Saves info 
-    void displayInfo();
+    void saveLoggs();                     //Loggs function should be made               //Saves info 
 };
 
-
-void User::saveInforToFile() {
-
-};
-
-void User::displayInfo() {
-    
-};
 int User::number = 0;
 
 
