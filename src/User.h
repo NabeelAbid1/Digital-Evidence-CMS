@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include "Logger.h"
 
 
 using namespace std;
@@ -33,6 +32,8 @@ public:
         this->userRole =userRole;
     }
     void saveLoggs();                     //Loggs function should be made               //Saves info 
+
+    friend class Logger;
 };
 
 int User::number = 0;

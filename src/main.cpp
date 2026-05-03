@@ -3,12 +3,13 @@
 #include <string>
 #include <list>
 #include <vector>
-#include <Windows.h>
 #include <unordered_map>  //Provides a hash map (key-value container)
 #include <functional>     //Allows storing functions
 #include <thread>         //For sleep (cross platform)
 #include <chrono>         //Used with thread
 #include <sstream>        //For stringstream
+
+#include <Windows.h>
 
 //classes headers
 #include "User.h"
@@ -94,6 +95,7 @@ int AdminRoles(){
         return 99;
     }
     int num=0;
+    Logger& log = Logger::get();//cleaner function call
     while(true){
         //Taking credentials
         string loginUserInput, loginUserPass;
@@ -112,7 +114,10 @@ int AdminRoles(){
         
         //if Not verified 
             //User can enter credentials three 3 only for preventing brute force attack then send back to login page
-        if(CurrentLoggedAdmin!=nullptr) break;
+        if(CurrentLoggedAdmin!=nullptr) {
+            break;
+        }
+        log.logLoginFailed(loginUserInput);
         if(num <=3){
             cout << "Try again\n";
             num++;
@@ -124,9 +129,9 @@ int AdminRoles(){
             return 99;
         }  
     }
+    log.logLogin(*CurrentLoggedAdmin);
     while(true){
         int CaseId;
-
         cout <<"Enter Case ID\n";
         cin >> CaseId;
         cout <<"Creating case\n..";
@@ -143,7 +148,7 @@ int AdminRoles(){
 
         Sleep(2000);
         cout <<"Case is opened\n";
-        //log
+        log.logCaseOpened(*CurrentLoggedAdmin, *loadedCase);
 
         //Admin Jobs
         while(true){
@@ -160,9 +165,11 @@ int AdminRoles(){
 
             if(choice == 3){
                 loadedCase->lockCase();
+                log.logStatusChanged(*CurrentLoggedAdmin, *loadedCase, loadedCase->getStatus());
             }
             else if(choice == 4){
                 loadedCase->unLockCase();
+                log.logStatusChanged(*CurrentLoggedAdmin, *loadedCase, loadedCase->getStatus());
             }
             else if (choice == 2){
                 if(loadedCase->getStatus()==3){
@@ -170,7 +177,9 @@ int AdminRoles(){
                     continue;
                 }
                 if(loadedCase->getStatus()==2){
+                    int oldStatus = loadedCase->getStatus();
                     loadedCase->advanceStatus();
+                    log.logStatusChanged(*CurrentLoggedAdmin, *loadedCase, oldStatus);
                 }
 
             }else if (choice == 1){
@@ -178,15 +187,16 @@ int AdminRoles(){
                 int opt;
                 cout << "Do you want to verify evidences?(1/0)";
                 cin >> opt;
-                //opt==1? loadedCase->verifyEvidenceIntegrity(): continue;
-                if(opt==1){ continue;    }
+                if(opt==1){ continue; }
                 loadedCase->verifyEvidenceIntegrity();
+                log.logEvidenceVerified(*CurrentLoggedAdmin, *loadedCase);
             }
             else if(choice ==0){
                 loadedCase->displayCase();
             }
             else if (choice == 5) {
                 loadedCase->saveCase();
+                log.logCaseSaved(*CurrentLoggedAdmin, *loadedCase);
                 delete loadedCase;
                 cout <<"Case is saved\n";
                 break;
@@ -219,6 +229,7 @@ int AnalystRoles(){
         return 99;
     }
     int num=0;
+    Logger& log = Logger::get();//cleaner function call
     while(true){
         //Taking credentials
         string loginUserInput, loginUserPass;
@@ -239,9 +250,9 @@ int AnalystRoles(){
             //User can enter credentials three 3 only for preventing brute force attack then send back to login page
         if(CurrentLoggedAnalyst!=nullptr)  {
             cout <<"Login Successfully\n";
-            //Logg
             break;
         }
+        log.logLoginFailed(loginUserInput);
         if(num <=3){
             cout << "Try again\n";
             num++;
@@ -252,7 +263,8 @@ int AnalystRoles(){
             system("cls");
             return 99;
         }   
-    }  
+    }
+    log.logLogin(*CurrentLoggedAnalyst);
     //Design the Main admin menu where list all the functions of admin
     while(true){
         system("cls");
@@ -292,7 +304,7 @@ int AnalystRoles(){
         
         Sleep(2000);
         cout <<"Case is opened\n";
-        //log
+        log.logCaseOpened(*CurrentLoggedAnalyst, *loadedCase);
 
         //Analyst Jobs
         while(true){
@@ -307,18 +319,20 @@ int AnalystRoles(){
                     cout <<"Case is already submitted\n";
                     break;
                 }
+                int oldStatus = loadedCase->getStatus();
                 loadedCase->advanceStatus();
+                log.logStatusChanged(*CurrentLoggedAnalyst, *loadedCase, oldStatus);
 
             }
             else if(choice == 3){
                 loadedCase->saveCase();
+                log.logCaseSaved(*CurrentLoggedAnalyst, *loadedCase);
                 delete loadedCase;
                 cout<<"Cases is saved\n";
                 break;
             }
             else if(choice == 1){
-                //Adding Evidences 
-                //log
+                //Adding Evidences
                 
                 while(true){
                     if(loadedCase->getIsLocked()){
@@ -361,7 +375,9 @@ int AnalystRoles(){
                         getline(cin, resolution);
 
                         VideoEvidence vidEv(fileSize, id, filename, duration, resolution);
-                        loadedCase->addEvidence(&vidEv);
+                        bool added = loadedCase->addEvidence(&vidEv);
+                        if(added) log.logEvidenceAdded(*CurrentLoggedAnalyst, vidEv, *loadedCase);
+                        else      log.logEvidenceBlocked(*CurrentLoggedAnalyst, vidEv, *loadedCase);
 
                         cout <<"Video evidence added successfully\n";
                         Sleep(2000);
@@ -391,7 +407,9 @@ int AnalystRoles(){
                         cin >> sampleRateHz;
 
                         AudioEvidence audEv(fileSize, id, filename, duration, sampleRateHz);
-                        loadedCase->addEvidence(&audEv);
+                        bool added = loadedCase->addEvidence(&audEv);
+                        if(added) log.logEvidenceAdded(*CurrentLoggedAnalyst, audEv, *loadedCase);
+                        else      log.logEvidenceBlocked(*CurrentLoggedAnalyst, audEv, *loadedCase);
 
                         cout <<"Audio evidence added successfully\n";
                         Sleep(2000);
@@ -426,7 +444,9 @@ int AnalystRoles(){
                         getline(cin, format);
 
                         ImageEvidence imgEv(fileSize, id, filename, resolution, format, captureDevice);
-                        loadedCase->addEvidence(&imgEv);
+                        bool added = loadedCase->addEvidence(&imgEv);
+                        if(added) log.logEvidenceAdded(*CurrentLoggedAnalyst, imgEv, *loadedCase);
+                        else      log.logEvidenceBlocked(*CurrentLoggedAnalyst, imgEv, *loadedCase);
 
                         cout <<"Image evidence added successfully\n";
                         Sleep(2000);
@@ -474,6 +494,7 @@ int IntakeOfficerRoles(){
         return 99;
     }
     int num=0;
+    Logger& log = Logger::get(); //cleaner function call
     while(true){
         //Taking credentials
         string loginUserInput, loginUserPass;
@@ -494,9 +515,9 @@ int IntakeOfficerRoles(){
             //User can enter credentials three 3 only for preventing brute force attack then send back to login page
         if(CurrentLoggedIntakeOfficer!=nullptr) {
             cout <<"Login Successfully\n";
-            //Logg
             break;
         }
+        log.logLoginFailed(loginUserInput);
         if(num <=3){
             cout << "Try again\n";
             num++;
@@ -508,6 +529,7 @@ int IntakeOfficerRoles(){
             return 99;
         }     
     }
+    log.logLogin(*CurrentLoggedIntakeOfficer);
 
     //Design the Main admin menu where list all the functions of admin
     while(true){
@@ -551,10 +573,9 @@ int IntakeOfficerRoles(){
         cout <<"Creating case\n..";
         Sleep(3000);
         cout <<"Case is created\n";
-        //log
+        log.logCaseCreated(*CurrentLoggedIntakeOfficer, c1);
 
         //Adding Evidences
-        //log
         while(true){
             system("cls");
             cout << "Enter evidences\n";
@@ -564,7 +585,6 @@ int IntakeOfficerRoles(){
             cout <<"2. Audio\n";
             cout <<"3. Image\n";
             cout <<"4. Nothing\n";
-            //cout <<"5. Nothing\n";
 
             if(opt == 1 ){
                 cout << "Video Evidence\n...";
@@ -592,7 +612,9 @@ int IntakeOfficerRoles(){
                 getline(cin, resolution);
 
                 VideoEvidence vidEv(fileSize, id, filename, duration, resolution);
-                c1.addEvidence(&vidEv);
+                bool added = c1.addEvidence(&vidEv);
+                if(added) log.logEvidenceAdded(*CurrentLoggedIntakeOfficer, vidEv, c1);
+                else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, vidEv, c1);
 
                 cout <<"Video evidence added successfully\n";
                 Sleep(2000);
@@ -622,7 +644,9 @@ int IntakeOfficerRoles(){
                 cin >> sampleRateHz;
 
                 AudioEvidence audEv(fileSize, id, filename, duration, sampleRateHz);
-                c1.addEvidence(&audEv);
+                bool added = c1.addEvidence(&audEv);
+                if(added) log.logEvidenceAdded(*CurrentLoggedIntakeOfficer, audEv, c1);
+                else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, audEv, c1);
 
                 cout <<"Audio evidence added successfully\n";
                 Sleep(2000);
@@ -657,7 +681,9 @@ int IntakeOfficerRoles(){
                 getline(cin, format);
 
                 ImageEvidence imgEv(size, id, filename, resolution, format, captureDevice);
-                c1.addEvidence(&imgEv);
+                bool added = c1.addEvidence(&imgEv);
+                if(added) log.logEvidenceAdded(*CurrentLoggedIntakeOfficer, imgEv, c1);
+                else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, imgEv, c1);
 
                 cout <<"Image evidence added successfully\n";
                 Sleep(2000);
@@ -668,7 +694,8 @@ int IntakeOfficerRoles(){
                 cout << "List of Evidences that are added\n";
                 c1.displayEvidence();
                 cout <<"Case is submitted\n";
-                c1.saveCase();//when nothing to add just close and save the case
+                c1.saveCase();
+                log.logCaseSaved(*CurrentLoggedIntakeOfficer, c1);
                 break;
             }
         }

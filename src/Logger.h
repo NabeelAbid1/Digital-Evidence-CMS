@@ -51,6 +51,18 @@ public:
         write(u.userCode + " created Case #" + to_string(c.cId) + " (" + c.crimeType + ")");
     }
 
+    void logCaseOpened(const User& u, const Case& c) {
+        write(u.userCode + " opened Case #" + to_string(c.cId) + " (" + c.crimeType + ")");
+    }
+
+    void logCaseSaved(const User& u, const Case& c) {
+        write(u.userCode + " saved Case #" + to_string(c.cId));
+    }
+
+    void logEvidenceVerified(const User& u, const Case& c) {
+        write(u.userCode + " verified evidence integrity for Case #" + to_string(c.cId));
+    }
+
     void logStatusChanged(const User& u, const Case& c, int oldStatus) {
         string statusNames[] = { "OPEN", "UNDER INVESTIGATION", "SUBMITTED", "CLOSED" };
         write(u.userCode + " changed Case #" + to_string(c.cId) + " status: "
