@@ -25,14 +25,15 @@ protected:
 public:
     Evidence()
         : eId(" "), hash(" "), sizeMB(0){
-        evidenceCount++;
+        ++evidenceCount;
     }
 
     Evidence(double s, int cId, string fileName)
         : sizeMB(s),
           eId(to_string(cId) + "-E" + to_string(evidenceCount)),
           hash(generateHash(cId)), fileName(fileName) {
-        evidenceCount++;
+        ++evidenceCount;
+        cout << "Ev created\n"; //for testing -> it is creating
     }
 
     //For getting existing data use by drived class

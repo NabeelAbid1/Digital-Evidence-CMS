@@ -1,2 +1,3 @@
 Name|UserID|Password|UserCode|UserRole|CaseVerified
-Ali|AD01|#$%^tyg|US01|Admin|0
+Sheraz|AD01|#$%^tyg|US01|Admin|0
+Nabeel|AD02|AdNl420|US02|Admin|0

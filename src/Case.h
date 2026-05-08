@@ -2,10 +2,12 @@
 #define CASE_H
 
 #include <iostream>
+//#include <Windows.h>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
+
 #include "Evidence.h"
 using namespace std;
 
@@ -25,7 +27,9 @@ private:
 
 public:
     Case(string v, string d, string crime, int level, string registerBy)
-        : cId(totalCases++),victim(v),discription(d),crimeType(crime),threatLevel(level),status(1),isLocked(false), registerBy(registerBy) {}
+        : cId(totalCases++),victim(v),discription(d),crimeType(crime),threatLevel(level),status(1),isLocked(false), registerBy(registerBy) {
+            cout <<"\nCase Created\n"; //for testing -> it is creating
+        }
 
     //After reading from file and initializing the Case object for that
     Case(int caseID, string vic, string dis, string crime, int level, string registerBy, bool status, bool isLocked): cId(caseID),victim(vic),discription(dis),crimeType(crime),threatLevel(level), registerBy(registerBy),status(status),isLocked(isLocked) {}
@@ -52,7 +56,7 @@ public:
         cout << "\n  Evidence List for Case #" << cId << "\n";
         for (size_t i = 0; i < evidenceList.size(); i++) {
             cout << "\n  [" << i + 1 << "]";
-            evidenceList[i]->display(); 
+            evidenceList[i]->display(); // this is not working whyy 
         }
     }
 
@@ -225,8 +229,10 @@ int Case::totalCases = 0;
 void Case::saveCase() const {
     //filename will be based on caseId
     string filename = "data/cases/CASE_" + to_string(cId) + ".txt";
+    cout << "Case is being save...";
+    //Sleep(2000);
     
-    ofstream outFile(filename);
+    ofstream outFile(filename, ios::app);
     
     if (!outFile.is_open()) {
         cerr << "ERROR: Could not open file for saving case: " << filename << endl;
