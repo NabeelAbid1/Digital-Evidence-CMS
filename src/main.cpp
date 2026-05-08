@@ -393,10 +393,10 @@ int AnalystRoles(){
                         cout <<"Enter resolution : ";
                         getline(cin, resolution);
 
-                        VideoEvidence vidEv(fileSize, id, filename, duration, resolution);
-                        bool added = loadedCase->addEvidence(&vidEv);
-                        if(added) log.logEvidenceAdded(*CurrentLoggedAnalyst, vidEv, *loadedCase);
-                        else      log.logEvidenceBlocked(*CurrentLoggedAnalyst, vidEv, *loadedCase);
+                        VideoEvidence* vidEv = new VideoEvidence(fileSize, id, filename, duration, resolution);
+                        bool added = loadedCase->addEvidence(vidEv);
+                        if(added) log.logEvidenceAdded(*CurrentLoggedAnalyst, *vidEv, *loadedCase);
+                        else      log.logEvidenceBlocked(*CurrentLoggedAnalyst, *vidEv, *loadedCase);
 
                         cout <<"Video evidence added successfully\n";
                         Sleep(2000);
@@ -425,10 +425,10 @@ int AnalystRoles(){
                         cout <<"Enter sampleRateHz : ";
                         cin >> sampleRateHz;
 
-                        AudioEvidence audEv(fileSize, id, filename, duration, sampleRateHz);
-                        bool added = loadedCase->addEvidence(&audEv);
-                        if(added) log.logEvidenceAdded(*CurrentLoggedAnalyst, audEv, *loadedCase);
-                        else      log.logEvidenceBlocked(*CurrentLoggedAnalyst, audEv, *loadedCase);
+                        AudioEvidence* audEv = new AudioEvidence(fileSize, id, filename, duration, sampleRateHz);
+                        bool added = loadedCase->addEvidence(audEv);
+                        if(added) log.logEvidenceAdded(*CurrentLoggedAnalyst, *audEv, *loadedCase);
+                        else      log.logEvidenceBlocked(*CurrentLoggedAnalyst, *audEv, *loadedCase);
 
                         cout <<"Audio evidence added successfully\n";
                         Sleep(2000);
@@ -462,10 +462,10 @@ int AnalystRoles(){
                         cout <<"Enter format ";
                         getline(cin, format);
 
-                        ImageEvidence imgEv(fileSize, id, filename, resolution, format, captureDevice);
-                        bool added = loadedCase->addEvidence(&imgEv);
-                        if(added) log.logEvidenceAdded(*CurrentLoggedAnalyst, imgEv, *loadedCase);
-                        else      log.logEvidenceBlocked(*CurrentLoggedAnalyst, imgEv, *loadedCase);
+                        ImageEvidence* imgEv = new ImageEvidence(fileSize, id, filename, resolution, format, captureDevice);
+                        bool added = loadedCase->addEvidence(imgEv);
+                        if(added) log.logEvidenceAdded(*CurrentLoggedAnalyst, *imgEv, *loadedCase);
+                        else      log.logEvidenceBlocked(*CurrentLoggedAnalyst, *imgEv, *loadedCase);
 
                         cout <<"Image evidence added successfully\n";
                         Sleep(2000);
@@ -638,10 +638,10 @@ int IntakeOfficerRoles(){
                 cout <<"Enter resolution : ";
                 getline(cin, resolution);
 
-                VideoEvidence vidEv(fileSize, id, filename, duration, resolution);
-                bool added = c1.addEvidence(&vidEv);
-                if(added) log.logEvidenceAdded(*CurrentLoggedIntakeOfficer, vidEv, c1);
-                else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, vidEv, c1);
+                VideoEvidence* vidEv = new VideoEvidence(fileSize, id, filename, duration, resolution);
+                bool added = c1.addEvidence(vidEv);
+                if(added) log.logEvidenceAdded(*CurrentLoggedIntakeOfficer, *vidEv, c1);
+                else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, *vidEv, c1);
 
                 cout <<"Video evidence added successfully\n";
                 Sleep(2000);
@@ -670,10 +670,10 @@ int IntakeOfficerRoles(){
                 cout <<"Enter sampleRateHz : ";
                 cin >> sampleRateHz;
 
-                AudioEvidence audEv(fileSize, id, filename, duration, sampleRateHz);
-                bool added = c1.addEvidence(&audEv);
-                if(added) log.logEvidenceAdded(*CurrentLoggedIntakeOfficer, audEv, c1);
-                else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, audEv, c1);
+                AudioEvidence* audEv = new AudioEvidence(fileSize, id, filename, duration, sampleRateHz);
+                bool added = c1.addEvidence(audEv);
+                if(added) log.logEvidenceAdded(*CurrentLoggedIntakeOfficer, *audEv, c1);
+                else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, *audEv, c1);
 
                 cout <<"Audio evidence added successfully\n";
                 Sleep(2000);
@@ -707,10 +707,10 @@ int IntakeOfficerRoles(){
                 cout <<"Enter format : ";
                 getline(cin, format);
 
-                ImageEvidence imgEv(size, id, filename, resolution, format, captureDevice);
-                bool added = c1.addEvidence(&imgEv);
-                if(added) log.logEvidenceAdded(*CurrentLoggedIntakeOfficer, imgEv, c1);
-                else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, imgEv, c1);
+                ImageEvidence* imgEv = new ImageEvidence(size, id, filename, resolution, format, captureDevice);
+                bool added = c1.addEvidence(imgEv);
+                if(added) log.logEvidenceAdded(*CurrentLoggedIntakeOfficer, *imgEv, c1);
+                else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, *imgEv, c1);
 
                 cout <<"Image evidence added successfully\n";
                 Sleep(2000);

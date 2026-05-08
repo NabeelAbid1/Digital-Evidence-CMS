@@ -192,7 +192,7 @@ public:
            //disk->setHashValue(hash);
             return audio;
         }
-        if (type == "VIDEO") {
+        if (type == "IMAGE") {
             string eId, filename, fileSize, format, resolution, captureDevice, hash;
             getline(ss, eId, '|');
             getline(ss, filename, '|');

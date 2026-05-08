@@ -100,7 +100,7 @@ private:
 public:
     AudioEvidence(double s, int cId,  string fileName,
                   string dur, int sampleRate, string fmt = "WAV")
-        : Evidence(cId, s, fileName),
+        : Evidence(s, cId, fileName),
           duration(dur),
           sampleRateHz(sampleRate),
           format(fmt) {}
@@ -135,7 +135,7 @@ private:
 public:
     ImageEvidence(double s, int cId, string fileName,
                   string resolution, string format, string captureDevice)
-        : Evidence(cId, s, fileName),
+        : Evidence(s, cId, fileName),
           resolution(resolution),
           format(format),
           captureDevice(captureDevice) {}
