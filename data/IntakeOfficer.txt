@@ -1,0 +1,4 @@
+Name|UserID|Password|UserCode|UserRole|CaseOpened
+Hamza|IN01|hamza123|US03|IntakeOfficer|0
+Gohr|IN02|Gohr123|US04|IntakeOfficer|0
+Gohr|IN|in12|US04|IntakeOfficer|0

@@ -60,16 +60,19 @@ int main(){
             int result = it->second();   //calls the relative function of login
             if(result == 99) {
                 cout<<"Login failed! Returning to Login page\n";
-                this_thread::sleep_for(chrono::microseconds(2000));  //sleep(2000)
+                //this_thread::sleep_for(chrono::microseconds(2000));
+                Sleep(2000);
                 continue; //skip this iteration (go to start)
             }
             if(result == 10) {
                 cout << "Logot successfully\n";
-                this_thread::sleep_for(chrono::microseconds(2000));  //sleep(2000)
+                //this_thread::sleep_for(chrono::microseconds(2000));  
+                Sleep(2000);
                 continue;
             }
         } else {
             cout <<"Choice must be from 1-3\n";
+            Sleep(1500);
         }
 
 
@@ -88,6 +91,7 @@ int AdminRoles(){
     cout << "\t1. Enter Credentials\n";
     cout << "\t99. Back to Login page\n";
     cin >> choice;
+    cin.ignore();
 
     if(choice == 99) return choice;
     if(choice != 1) {
@@ -99,9 +103,9 @@ int AdminRoles(){
     while(true){
         //Taking credentials
         string loginUserInput, loginUserPass;
-        cout << "Enter login id";
+        cout << "Enter login id : ";
         cin >> loginUserInput;
-        cout << "Enter password";
+        cout << "Enter password : ";
         cin >> loginUserPass;
         cout << "Verifying Credentials...\n";
 
@@ -120,11 +124,13 @@ int AdminRoles(){
         log.logLoginFailed(loginUserInput);
         if(num <=3){
             cout << "Try again\n";
+            Sleep(1000);
             num++;
             system("cls");
             continue;
-        }else if (num > 3){
+        }else if (num >= 3){
             cout <<"Login limit exceeds\n";
+            Sleep(1000);
             system("cls");
             return 99;
         }  
@@ -132,9 +138,10 @@ int AdminRoles(){
     log.logLogin(*CurrentLoggedAdmin);
     while(true){
         int CaseId;
-        cout <<"Enter Case ID\n";
+        cout <<"Enter Case ID : ";
         cin >> CaseId;
-        cout <<"Creating case\n..";
+        cout <<"Creating case...";
+        Sleep(1200);
 
         string filename = "data/cases/CASE_" + to_string(CaseId) + ".txt";
 
@@ -162,6 +169,7 @@ int AdminRoles(){
             cout<<"4. Unlock Case\n";
             cout<<"5. Save Case\n";
             cin >> choice;
+            cin.ignore();
 
             if(choice == 3){
                 loadedCase->lockCase();
@@ -185,8 +193,9 @@ int AdminRoles(){
             }else if (choice == 1){
                 loadedCase->displayEvidence();
                 int opt;
-                cout << "Do you want to verify evidences?(1/0)";
+                cout << "Do you want to verify evidences?(1/0) : ";
                 cin >> opt;
+                cin.ignore();
                 if(opt==1){ continue; }
                 loadedCase->verifyEvidenceIntegrity();
                 log.logEvidenceVerified(*CurrentLoggedAdmin, *loadedCase);
@@ -219,13 +228,14 @@ int AnalystRoles(){
     //Design login menu of admin
     int choice;
     cout << "Enter\n";
-    cout << "\t1. Enter Credentials\n";
-    cout << "\t99. Back to Login page\n";
+    cout << "\t1. Enter Credentials : ";
+    cout << "\t99. Back to Login page : ";
     cin >> choice;
 
     if(choice == 99) return choice;
     if(choice != 99 && choice != 1) {
-        cout << "Invalid Choice\n";
+        cout << "Invalid Choice ";
+        Sleep(1000);
         return 99;
     }
     int num=0;
@@ -233,13 +243,14 @@ int AnalystRoles(){
     while(true){
         //Taking credentials
         string loginUserInput, loginUserPass;
-        cout << "Enter login id";
+        cout << "Enter login id : ";
         cin >> loginUserInput;
-        cout << "Enter password";
+        cout << "Enter password : ";
         cin >> loginUserPass;
         cout << "Verifying Credentials...\n";
 
-        this_thread::sleep_for(chrono::seconds(2));
+        //this_thread::sleep_for(chrono::seconds(2));
+        Sleep(2000);
 
         string analystfile = "data/analyst.txt";
             
@@ -250,6 +261,7 @@ int AnalystRoles(){
             //User can enter credentials three 3 only for preventing brute force attack then send back to login page
         if(CurrentLoggedAnalyst!=nullptr)  {
             cout <<"Login Successfully\n";
+            Sleep(1500);
             break;
         }
         log.logLoginFailed(loginUserInput);
@@ -275,21 +287,24 @@ int AnalystRoles(){
        
         cout << "Enter choice... : "; 
         cin >> choice;
+        cin.ignore();
 
         if(choice == 10){
             return choice;
         }
         if(choice!=1){
             cout <<"Invaild input\n";
+            Sleep(1200);
             continue;
         }
         
 
         int CaseId;
 
-        cout <<"Enter Case ID\n";
+        cout <<"Enter Case id : ";
         cin >> CaseId;
-        cout <<"Creating case\n..";
+        cin.ignore();
+        cout <<"Opening case...";
 
         string filename = "data/cases/CASE_" + to_string(CaseId) + ".txt";
 
@@ -314,6 +329,7 @@ int AnalystRoles(){
             cout<<"2. Submitted Case\n";
             cout<<"3. Save Case\n";
             cin >> choice;
+            cin.ignore();
             if(choice==2){
                 if(loadedCase->getStatus()==2){
                     cout <<"Case is already submitted\n";
@@ -349,6 +365,9 @@ int AnalystRoles(){
                     cout <<"4. Nothing\n";
                     //cout <<"5. Nothing\n";
 
+                    cin >> opt;
+                    cin.ignore();
+
                     if(opt == 1 ){
                         cout << "Video Evidence\n...";
 
@@ -356,22 +375,22 @@ int AnalystRoles(){
                         int id;
                         double fileSize;
 
-                        cout <<"Enter id";
+                        cout <<"Enter id : ";
                         cin >> id;
                         cin.ignore();
 
-                        cout <<"Enter filename";
+                        cout <<"Enter filename : ";
                         getline(cin, filename);
 
-                        cout <<"Enter size";
+                        cout <<"Enter size : ";
                         cin>>fileSize;
                         cin.ignore();
 
-                        cout <<"Enter duration";
+                        cout <<"Enter duration : ";
                         cin>> duration;
                         cin.ignore();
 
-                        cout <<"Enter resolution";
+                        cout <<"Enter resolution : ";
                         getline(cin, resolution);
 
                         VideoEvidence vidEv(fileSize, id, filename, duration, resolution);
@@ -388,22 +407,22 @@ int AnalystRoles(){
                         int id,sampleRateHz;
                         double fileSize;
 
-                        cout <<"Enter id";
+                        cout <<"Enter id : ";
                         cin >> id;
                         cin.ignore();
 
-                        cout <<"Enter filename";
+                        cout <<"Enter filename : ";
                         getline(cin, filename);
 
-                        cout <<"Enter size";
+                        cout <<"Enter size : ";
                         cin>>fileSize;
                         cin.ignore();
 
-                        cout <<"Enter duration";
+                        cout <<"Enter duration : ";
                         cin>> duration;
                         cin.ignore();
 
-                        cout <<"Enter sampleRateHz";
+                        cout <<"Enter sampleRateHz : ";
                         cin >> sampleRateHz;
 
                         AudioEvidence audEv(fileSize, id, filename, duration, sampleRateHz);
@@ -422,25 +441,25 @@ int AnalystRoles(){
                         int id;
                         double fileSize;
 
-                        cout <<"Enter id";
+                        cout <<"Enter id ";
                         cin >> id;
                         cin.ignore();
 
-                        cout <<"Enter filename";
+                        cout <<"Enter filename ";
                         getline(cin, filename);
 
-                        cout <<"Enter size";
+                        cout <<"Enter size ";
                         cin>>fileSize;
                         cin.ignore();
 
-                        cout <<"Enter captureDevice";
+                        cout <<"Enter captureDevice ";
                         cin>> captureDevice;
                         cin.ignore();
 
-                        cout <<"Enter resolution";
+                        cout <<"Enter resolution ";
                         getline(cin, resolution);
 
-                        cout <<"Enter format";
+                        cout <<"Enter format ";
                         getline(cin, format);
 
                         ImageEvidence imgEv(fileSize, id, filename, resolution, format, captureDevice);
@@ -457,6 +476,7 @@ int AnalystRoles(){
                         cout << "List of Evidences that are added\n";
                         loadedCase->displayEvidence();
                         cout <<"Case is submitted\n";
+                        Sleep(1000);
                         
                         break;
                     }
@@ -498,13 +518,14 @@ int IntakeOfficerRoles(){
     while(true){
         //Taking credentials
         string loginUserInput, loginUserPass;
-        cout << "Enter login id";
+        cout << "Enter login id : ";
         cin >> loginUserInput;
-        cout << "Enter password";
+        cout << "Enter password : ";
         cin >> loginUserPass;
         cout << "Verifying Credentials...\n";
 
-        this_thread::sleep_for(chrono::seconds(2));
+        //this_thread::sleep_for(chrono::seconds(2));
+        Sleep(2000);
 
         string IntakeOfficerfile = "data/IntakeOfficer.txt";
             
@@ -515,6 +536,7 @@ int IntakeOfficerRoles(){
             //User can enter credentials three 3 only for preventing brute force attack then send back to login page
         if(CurrentLoggedIntakeOfficer!=nullptr) {
             cout <<"Login Successfully\n";
+            Sleep(1500);
             break;
         }
         log.logLoginFailed(loginUserInput);
@@ -523,7 +545,7 @@ int IntakeOfficerRoles(){
             num++;
             system("cls");
             continue;
-        }else if (num > 3){
+        }else if (num >= 3){
             cout <<"Login limit exceeds\n";
             system("cls");
             return 99;
@@ -541,12 +563,14 @@ int IntakeOfficerRoles(){
        
         cout << "Enter choice... : "; 
         cin >> choice;
+        cin.ignore(); //*
 
         if(choice == 10){
             return choice;
         }
         if(choice!=1){
             cout <<"Invaild input\n";
+            Sleep(1200); //*
             continue;
         }
         string vicName, discription, registName, crimeType;
@@ -570,10 +594,10 @@ int IntakeOfficerRoles(){
 
         Case c1(vicName, discription, crimeType, threatLevel, registName);
 
-        cout <<"Creating case\n..";
+        cout <<"Creating case..";
         Sleep(3000);
         cout <<"Case is created\n";
-        log.logCaseCreated(*CurrentLoggedIntakeOfficer, c1);
+        //log.logCaseCreated(*CurrentLoggedIntakeOfficer, c1);
 
         //Adding Evidences
         while(true){
@@ -586,6 +610,9 @@ int IntakeOfficerRoles(){
             cout <<"3. Image\n";
             cout <<"4. Nothing\n";
 
+            cin >> opt; //*
+            cin.ignore(); //*
+
             if(opt == 1 ){
                 cout << "Video Evidence\n...";
 
@@ -593,22 +620,22 @@ int IntakeOfficerRoles(){
                 int id;
                 double fileSize;
 
-                cout <<"Enter id";
+                cout <<"Enter id : ";
                 cin >> id;
                 cin.ignore();
 
-                cout <<"Enter filename";
+                cout <<"Enter filename : ";
                 getline(cin, filename);
 
-                cout <<"Enter size";
+                cout <<"Enter size : ";
                 cin>>fileSize;
                 cin.ignore();
 
-                cout <<"Enter duration";
+                cout <<"Enter duration : ";
                 cin>> duration;
                 cin.ignore();
 
-                cout <<"Enter resolution";
+                cout <<"Enter resolution : ";
                 getline(cin, resolution);
 
                 VideoEvidence vidEv(fileSize, id, filename, duration, resolution);
@@ -625,22 +652,22 @@ int IntakeOfficerRoles(){
                 int id,sampleRateHz;
                 double fileSize;
 
-                cout <<"Enter id";
+                cout <<"Enter id : ";
                 cin >> id;
                 cin.ignore();
 
-                cout <<"Enter filename";
+                cout <<"Enter filename : ";
                 getline(cin, filename);
 
-                cout <<"Enter size";
+                cout <<"Enter size : ";
                 cin>>fileSize;
                 cin.ignore();
 
-                cout <<"Enter duration";
+                cout <<"Enter duration : ";
                 cin>> duration;
                 cin.ignore();
 
-                cout <<"Enter sampleRateHz";
+                cout <<"Enter sampleRateHz : ";
                 cin >> sampleRateHz;
 
                 AudioEvidence audEv(fileSize, id, filename, duration, sampleRateHz);
@@ -659,25 +686,25 @@ int IntakeOfficerRoles(){
                 int id; 
                 double size;
 
-                cout <<"Enter id";
+                cout <<"Enter id : ";
                 cin >> id;
                 cin.ignore();
 
-                cout <<"Enter filename";
+                cout <<"Enter filename : ";
                 getline(cin, filename);
 
-                cout <<"Enter size";
+                cout <<"Enter size : ";
                 cin>>size;
                 cin.ignore();
 
-                cout <<"Enter captureDevice";
+                cout <<"Enter captureDevice : ";
                 cin>> captureDevice;
                 cin.ignore();
 
-                cout <<"Enter resolution";
+                cout <<"Enter resolution : ";
                 getline(cin, resolution);
 
-                cout <<"Enter format";
+                cout <<"Enter format : ";
                 getline(cin, format);
 
                 ImageEvidence imgEv(size, id, filename, resolution, format, captureDevice);
@@ -693,8 +720,11 @@ int IntakeOfficerRoles(){
             else if (opt == 4){
                 cout << "List of Evidences that are added\n";
                 c1.displayEvidence();
-                cout <<"Case is submitted\n";
+                Sleep(5000);
+                cout <<"Case is submitted\n"; //This isnot showing stops at c1.displayEvidence()
+                Sleep(2000);
                 c1.saveCase();
+                log.logCaseCreated(*CurrentLoggedIntakeOfficer, c1);
                 log.logCaseSaved(*CurrentLoggedIntakeOfficer, c1);
                 break;
             }
@@ -713,6 +743,7 @@ User* loginUser(string userName, string userPass, const string& filename){
     ifstream file(filename);
     if(!file){
         cout << "Error!\tUnable to open file\n";
+        Sleep(1200);
         return nullptr;
     }
     

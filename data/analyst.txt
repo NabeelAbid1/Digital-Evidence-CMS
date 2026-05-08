@@ -1,0 +1,3 @@
+Name|UserID|Password|UserCode|UserRole|CaseAnalyzed
+Owais|AA01|owais124|US05|Analyst|0
+Ahmed|AA01|ahmed99|US06|Analyst|0
