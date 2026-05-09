@@ -56,7 +56,7 @@ public:
         cout << "\n  Evidence List for Case #" << cId << "\n";
         for (size_t i = 0; i < evidenceList.size(); i++) {
             cout << "\n  [" << i + 1 << "]";
-            evidenceList[i]->display(); // this is not working whyy 
+            evidenceList[i]->display(); // this is not working whyy -- fixed, loading keyword was wrong EVIDENCE to EVIDENCE:
         }
     }
 
@@ -232,7 +232,7 @@ void Case::saveCase() const {
     cout << "Case is being save...";
     //Sleep(2000);
     
-    ofstream outFile(filename, ios::app);
+    ofstream outFile(filename, ios::trunc);
     
     if (!outFile.is_open()) {
         cerr << "ERROR: Could not open file for saving case: " << filename << endl;
@@ -292,7 +292,7 @@ Case* Case::loadCase(const string& filename) {
         if (line.empty()) continue;
         
         // Check for evidence section markers
-        if (line == "EVIDENCE") {
+        if (line == "EVIDENCE:") {
             readingEvidence = true;
             continue;
         }
