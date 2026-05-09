@@ -52,9 +52,16 @@ int main(){
         cout << "\t1. Login as Admin" << endl;          //Admin/Chief: Full access to re-open cases and view all logs.
         cout << "\t2. Login as Analyst" << endl;        //Analyst: Can view and add notes to assigned cases only.
         cout << "\t3. Login as Intake Officer" << endl; //Intake Officer: Can register cases but cannot modify evidence.
+        cout << "\t10. Exit" << endl;
         cout << "Enter number to login... : "; 
         cin >> LoginChoise;
 
+        if(LoginChoise == 10){
+        cout << "Goodbye!\n";
+        Sleep(1000);
+        return 0;
+        }
+        
         auto it = loginStrategies.find(LoginChoise);
         if (it!=loginStrategies.end()){
             int result = it->second();   //calls the relative function of login
@@ -168,6 +175,7 @@ int AdminRoles(){
             cout<<"3. Lock Case\n";
             cout<<"4. Unlock Case\n";
             cout<<"5. Save Case\n";
+            cout<<"10. Logout\n";
             cin >> choice;
             cin.ignore();
 
@@ -209,6 +217,9 @@ int AdminRoles(){
                 delete loadedCase;
                 cout <<"Case is saved\n";
                 break;
+            }
+            else if(choice == 10){
+            return choice;
             }
         }
     
