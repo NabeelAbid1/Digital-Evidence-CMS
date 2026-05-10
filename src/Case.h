@@ -27,8 +27,8 @@ private:
 
 public:
     Case(string v, string d, string crime, int level, string registerBy)
-        : cId(totalCases++),victim(v),discription(d),crimeType(crime),threatLevel(level),status(1),isLocked(false), registerBy(registerBy) {
-            cout <<"\nCase Created\n"; //for testing -> it is creating
+        : cId(++totalCases),victim(v),discription(d),crimeType(crime),threatLevel(level),status(1),isLocked(false), registerBy(registerBy) {
+            //cout <<"\nCase Created\n"; //for testing -> it is creating
         }
 
     //After reading from file and initializing the Case object for that
@@ -56,7 +56,7 @@ public:
         cout << "\n  Evidence List for Case #" << cId << "\n";
         for (size_t i = 0; i < evidenceList.size(); i++) {
             cout << "\n  [" << i + 1 << "]";
-            evidenceList[i]->display(); // this is not working whyy -- fixed, loading keyword was wrong EVIDENCE to EVIDENCE:
+            evidenceList[i]->display(); //resolved issues
         }
     }
 
@@ -261,7 +261,7 @@ void Case::saveCase() const {
     outFile << "END_EVIDENCE" << endl;
     
     outFile.close();
-    cout << "Case " << cId << " is saved successfully." << endl;
+    cout << "Case " << cId << " is saved successfully.\n" << endl;
 }
 
 Case* Case::loadCase(const string& filename) {
@@ -358,7 +358,7 @@ Case* Case::loadCase(const string& filename) {
 
     loadedCase->evidenceList = evidenceList;
     
-    cout << "Case " << caseId << "is loaded successfully." << endl;
+    cout << "Case " << caseId << " is loaded successfully." << endl;
     return loadedCase;
 }
 #endif // CASE_H

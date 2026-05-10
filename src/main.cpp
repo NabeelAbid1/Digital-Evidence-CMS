@@ -72,7 +72,7 @@ int main(){
                 continue; //skip this iteration (go to start)
             }
             if(result == 10) {
-                cout << "Logot successfully\n";
+                cout << "Logout successfully\n";
                 //this_thread::sleep_for(chrono::microseconds(2000));  
                 Sleep(2000);
                 continue;
@@ -147,7 +147,7 @@ int AdminRoles(){
         int CaseId;
         cout <<"Enter Case ID : ";
         cin >> CaseId;
-        cout <<"Creating case...";
+        cout <<"Opening case...\n";
         Sleep(1200);
 
         string filename = "data/cases/CASE_" + to_string(CaseId) + ".txt";
@@ -166,10 +166,11 @@ int AdminRoles(){
 
         //Admin Jobs
         while(true){
+            Sleep(3000);
 
             int choice;
             //create logg at every choice (do as you prefer)
-            cout << "0. Display Case\n";
+            cout << "\n\n0. Display Case\n";
             cout<<"1. Check Evidences\n"; 
             cout<<"2. Close Case\n";
             cout<<"3. Lock Case\n";
@@ -189,7 +190,7 @@ int AdminRoles(){
             }
             else if (choice == 2){
                 if(loadedCase->getStatus()==3){
-                    cout <<"Error! Case is already closed";
+                    cout <<"Error! Case is already closed\n";
                     continue;
                 }
                 if(loadedCase->getStatus()==2){
@@ -204,7 +205,7 @@ int AdminRoles(){
                 cout << "Do you want to verify evidences?(1/0) : ";
                 cin >> opt;
                 cin.ignore();
-                if(opt==1){ continue; }
+                if(opt==0){ continue; }
                 loadedCase->verifyEvidenceIntegrity();
                 log.logEvidenceVerified(*CurrentLoggedAdmin, *loadedCase);
             }
@@ -215,8 +216,8 @@ int AdminRoles(){
                 loadedCase->saveCase();
                 log.logCaseSaved(*CurrentLoggedAdmin, *loadedCase);
                 delete loadedCase;
-                cout <<"Case is saved\n";
-                break;
+                //cout <<"Case is saved\n";
+                continue;
             }
             else if(choice == 10){
             return choice;
@@ -239,7 +240,7 @@ int AnalystRoles(){
     //Design login menu of admin
     int choice;
     cout << "Enter\n";
-    cout << "\t1. Enter Credentials : ";
+    cout << "\t1. Enter Credentials : \n";
     cout << "\t99. Back to Login page : ";
     cin >> choice;
 
@@ -315,7 +316,7 @@ int AnalystRoles(){
         cout <<"Enter Case id : ";
         cin >> CaseId;
         cin.ignore();
-        cout <<"Opening case...";
+        cout <<"Opening case...\n";
 
         string filename = "data/cases/CASE_" + to_string(CaseId) + ".txt";
 
@@ -324,6 +325,7 @@ int AnalystRoles(){
 
         if(loadedCase == nullptr){
             cout << "Error! No case found\n";
+            Sleep(1000);
             continue;
         }
 
@@ -336,7 +338,7 @@ int AnalystRoles(){
         while(true){
             int choice;
             //create logg at every choice (do as you prefer)
-            cout<<"1. Add Evidences\n"; 
+            cout<<"\n1. Add Evidences\n"; 
             cout<<"2. Submitted Case\n";
             cout<<"3. Save Case\n";
             cin >> choice;
@@ -356,6 +358,7 @@ int AnalystRoles(){
                 log.logCaseSaved(*CurrentLoggedAnalyst, *loadedCase);
                 delete loadedCase;
                 cout<<"Cases is saved\n";
+                Sleep(2000);
                 break;
             }
             else if(choice == 1){
@@ -484,10 +487,10 @@ int AnalystRoles(){
                     }
                     
                     else if (opt == 4){
-                        cout << "List of Evidences that are added\n";
+                        cout << "Updated list of Evidences:\n";
                         loadedCase->displayEvidence();
-                        cout <<"Case is submitted\n";
-                        Sleep(1000);
+                        //cout <<"\nCase is submitted\n";
+                        Sleep(2000);
                         
                         break;
                     }
@@ -605,9 +608,10 @@ int IntakeOfficerRoles(){
 
         Case c1(vicName, discription, crimeType, threatLevel, registName);
 
-        cout <<"Creating case..";
+        cout <<"Creating case..\n";
         Sleep(3000);
         cout <<"Case is created\n";
+        Sleep(2000);
         //log.logCaseCreated(*CurrentLoggedIntakeOfficer, c1);
 
         //Adding Evidences
@@ -655,7 +659,7 @@ int IntakeOfficerRoles(){
                 else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, *vidEv, c1);
 
                 cout <<"Video evidence added successfully\n";
-                Sleep(2000);
+                Sleep(3000);
                 
             }
             else if(opt == 2 ){
@@ -687,11 +691,11 @@ int IntakeOfficerRoles(){
                 else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, *audEv, c1);
 
                 cout <<"Audio evidence added successfully\n";
-                Sleep(2000);
+                Sleep(3000);
 
             }
             else if(opt == 3 ){
-                cout << "Image Evidence\n...";
+                cout << "Image Evidence...\n";
 
                 string captureDevice, resolution, filename, format;
                 int id; 
@@ -724,7 +728,7 @@ int IntakeOfficerRoles(){
                 else      log.logEvidenceBlocked(*CurrentLoggedIntakeOfficer, *imgEv, c1);
 
                 cout <<"Image evidence added successfully\n";
-                Sleep(2000);
+                Sleep(3000);
                 
             }
             

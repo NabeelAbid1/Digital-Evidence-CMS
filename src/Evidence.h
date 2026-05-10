@@ -116,7 +116,7 @@ public:
     void display() const override {
         cout << "\n  [AUDIO EVIDENCE]\n";
         displayBase();
-        cout << "\n  Duration : " << duration     << "\n  Sample Rate: " << sampleRateHz << "\n Hz\n"<< "  Format: " << format<< "\n";
+        cout << "\n  Duration : " << duration     << "\n  Sample Rate: " << sampleRateHz << " Hz\n"<< "  Format: " << format<< "\n";
     }
 
         //getters
