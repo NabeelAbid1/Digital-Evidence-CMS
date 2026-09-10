@@ -181,7 +181,7 @@ GraphMapper/
 
 ## Technical Stack
 
-- **Language:** *(TBD — Python / C++ / Java)*
+- **Language:** C++
 - **Paradigm:** Data Structures & Algorithms — all implemented manually
 - **Input:** JSON
 - **Interface:** Console CLI (menu-driven)
